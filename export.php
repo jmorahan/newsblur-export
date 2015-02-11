@@ -21,6 +21,7 @@ require 'vendor/autoload.php';
 
 use GuzzleHttp\Client;
 
+// Load username, password and API endpoint from configuration file.
 $ini_file = dirname(__FILE__) . '/newsblur.ini';
 if (file_exists($ini_file)) {
   extract(parse_ini_file(dirname(__FILE__) . '/newsblur.ini'));
@@ -59,6 +60,7 @@ class NewsBlurClient {
     return $response->json();
   }
 
+  // Subclasses can override this to display or log messages.
   protected function notify($message) {
     return;
   }
@@ -94,16 +96,22 @@ class NewsBlurSavedStories extends NewsBlurClient {
     $stories = [];
     $profiles = [];
     $feeds = [];
+    // Start at page 1, and continue until no stories are returned.
     for ($i = 1; ($result = $this->get('/reader/starred_stories', [ 'page' => $i ])), count($result['stories']); ++$i) {
       $stories = array_merge($stories, $result['stories']);
+
+      // Profiles aren't keyed by id, so we need to do some work to deduplicate them.
       if (!empty($result['user_profiles'])) {
         foreach ($result['user_profiles'] as $profile) {
           $profiles[$profile['user_id']] = $profile;
         }
       }
+
+      // Feeds are already keyed by id.
       if (!empty($result['feeds'])) {
         $feeds += $result['feeds'];
       }
+
       $this->notify(sprintf('Downloaded %d stories', count($stories)));
     }
     return [
