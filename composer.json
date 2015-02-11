@@ -1,0 +1,14 @@
+{
+    "name": "jmorahan/newsblur-tools",
+    "description": "NewsBlur client tools",
+    "require": {
+        "guzzlehttp/guzzle": "~5.2"
+    },
+    "license": "GPLv3",
+    "authors": [
+        {
+            "name": "John Morahan",
+            "email": "john.morahan@gmail.com"
+        }
+    ]
+}
