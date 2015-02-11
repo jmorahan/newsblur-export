@@ -30,6 +30,10 @@ class NewsBlurClient {
     return $response->json();
   }
 
+  protected function notify($message) {
+    return;
+  }
+
   public function login($username = NULL, $password = NULL) {
     if (isset($username)) {
       $this->username = $username;
@@ -38,21 +42,29 @@ class NewsBlurClient {
       $this->password = $password;
     }
     if (!$this->authenticated) {
+      $this->notify(sprintf("Logging in as '%s'...", $this->username));
       $result = $this->post('/api/login', [
         'username' => $this->username,
         'password' => $this->password,
       ]);
       $this->authenticated = $result['authenticated'];
     }
+    if (!$this->authenticated) {
+      $this->notify("Unable to log in. Check your username and password in 'newsblur.ini'.");
+    }
+    return $this->authenticated;
   }
 }
 
 class NewsBlurSavedStories extends NewsBlurClient {
   public function downloadSavedStories() {
-    $this->login();
-    $stories = array();
-    $profiles = array();
-    $feeds = array();
+    if (!$this->login()) {
+      return FALSE;
+    }
+    $this->notify('Downloading shared stories...');
+    $stories = [];
+    $profiles = [];
+    $feeds = [];
     for ($i = 1; ($result = $this->get('/reader/starred_stories', [ 'page' => $i ])), count($result['stories']); ++$i) {
       $stories = array_merge($stories, $result['stories']);
       if (!empty($result['user_profiles'])) {
@@ -63,6 +75,7 @@ class NewsBlurSavedStories extends NewsBlurClient {
       if (!empty($result['feeds'])) {
         $feeds += $result['feeds'];
       }
+      $this->notify(sprintf('Downloaded %d stories', count($stories)));
     }
     return [
       'stories' => $stories,
@@ -71,6 +84,17 @@ class NewsBlurSavedStories extends NewsBlurClient {
     ];
   }
 }
-$client = new NewsBlurSavedStories($endpoint, $username, $password);
-$json = json_encode($client->downloadSavedStories());
-file_put_contents('saved-stories.json', $json);
+
+class VerboseNewsBlurSavedStories extends NewsBlurSavedStories {
+  protected function notify($message) {
+    echo $message . "\n";
+  }
+}
+
+$client = new VerboseNewsBlurSavedStories($endpoint, $username, $password);
+$export = $client->downloadSavedStories();
+if ($export !== FALSE) {
+  echo "Saving to starred_stories.json\n";
+  $json = json_encode($export);
+  file_put_contents('starred_stories.json', $json);
+}
