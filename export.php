@@ -21,7 +21,19 @@ require 'vendor/autoload.php';
 
 use GuzzleHttp\Client;
 
-extract(parse_ini_file(dirname(__FILE__) . '/newsblur.ini'));
+$ini_file = dirname(__FILE__) . '/newsblur.ini';
+if (file_exists($ini_file)) {
+  extract(parse_ini_file(dirname(__FILE__) . '/newsblur.ini'));
+}
+else {
+  echo "Copy newsblur.ini.example to newsblur.ini and set your username and password.\n";
+  exit;
+}
+
+if ($username == 'your username here' && $password == 'password') {
+  echo "Please set your username and password in newsblur.ini\n";
+  exit;
+}
 
 class NewsBlurClient {
   public function __construct($base_url, $username = '', $password = '') {
