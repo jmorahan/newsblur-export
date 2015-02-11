@@ -4,7 +4,7 @@ require 'vendor/autoload.php';
 
 use GuzzleHttp\Client;
 
-extract(parse_ini_file('newsblur.ini'));
+extract(parse_ini_file(dirname(__FILE__) . '/newsblur.ini'));
 
 class NewsBlurClient {
   public function __construct($base_url, $username = '', $password = '') {
