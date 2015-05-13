@@ -77,7 +77,7 @@ class NewsBlurSavedStories extends NewsBlurClient {
     if (!$this->login()) {
       return FALSE;
     }
-    $this->notify('Downloading shared stories...');
+    $this->notify('Downloading saved stories...');
     $stories = [];
     $profiles = [];
     $feeds = [];
