@@ -2,7 +2,7 @@
     "name": "jmorahan/newsblur-tools",
     "description": "NewsBlur client tools",
     "require": {
-        "guzzlehttp/guzzle": "~5.2"
+        "guzzlehttp/guzzle": "~6.5"
     },
     "license": "GPLv3",
     "authors": [
