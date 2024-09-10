@@ -1,4 +1,11 @@
 # newsblur-export
+
+## Unmaintained
+
+Note that this project is no longer maintained. If I ever come back to it, it will be to rewrite it from scratch, most likely using node.js, and that would be a new project.
+
+## Original description
+
 (Unofficial) NewsBlur saved stories exporter
 
 Exports your saved stories from https://www.newsblur.com/
